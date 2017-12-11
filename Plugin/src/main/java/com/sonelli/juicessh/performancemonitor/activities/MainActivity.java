@@ -28,6 +28,7 @@ import com.sonelli.juicessh.performancemonitor.controllers.DiskUsageController;
 import com.sonelli.juicessh.performancemonitor.controllers.FreeRamController;
 import com.sonelli.juicessh.performancemonitor.controllers.LoadAverageController;
 import com.sonelli.juicessh.performancemonitor.controllers.NetworkUsageController;
+import com.sonelli.juicessh.performancemonitor.controllers.UpTimeController;
 import com.sonelli.juicessh.performancemonitor.helpers.PreferenceHelper;
 import com.sonelli.juicessh.performancemonitor.loaders.ConnectionListLoader;
 import com.sonelli.juicessh.performancemonitor.views.AutoResizeTextView;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
     private BaseController cpuUsageController;
     private BaseController diskUsageController;
     private BaseController networkUsageController;
+    private BaseController upTimeController;
 
     // Text displays
     private AutoResizeTextView loadAverageTextView;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
     private AutoResizeTextView cpuUsageTextView;
     private AutoResizeTextView networkUsageTextView;
     private AutoResizeTextView diskUsageTextView;
+    private AutoResizeTextView upTimeTextView;
 
     // State
     private volatile int sessionId;
@@ -101,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
         this.cpuUsageTextView = (AutoResizeTextView) findViewById(R.id.cpu_usage);
         this.networkUsageTextView = (AutoResizeTextView) findViewById(R.id.network_usage);
         this.diskUsageTextView = (AutoResizeTextView) findViewById(R.id.disk_usage);
+        this.upTimeTextView = (AutoResizeTextView) findViewById(R.id.uptime);
 
         this.connectButton = (Button) findViewById(R.id.connect_button);
         Drawable drawable = getDrawable(R.drawable.login);
@@ -308,6 +312,13 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
                 .setTextview(networkUsageTextView)
                 .start();
 
+        this.upTimeController = new UpTimeController(this)
+                .setSessionId(sessionId)
+                .setSessionKey(sessionKey)
+                .setPluginClient(client)
+                .setTextview(upTimeTextView)
+                .start();
+
     }
 
     @Override
@@ -343,11 +354,16 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
             networkUsageController.stop();
         }
 
+        if(upTimeController != null){
+            networkUsageController.stop();
+        }
+
         loadAverageTextView.setText("-");
         freeRamTextView.setText("-");
         cpuUsageTextView.setText("-");
         networkUsageTextView.setText("-");
         diskUsageTextView.setText("-");
+        upTimeTextView.setText("-");
 
         disconnectButton.setVisibility(View.GONE);
         disconnectButton.setEnabled(false);
