@@ -11,7 +11,7 @@ import com.sonelli.juicessh.pluginlibrary.listeners.OnSessionExecuteListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LoadAverageController extends BaseController {
+public class LoadAverageController extends TextController {
 
     public static final String TAG = "LoadAverageController";
 
@@ -20,7 +20,7 @@ public class LoadAverageController extends BaseController {
     }
 
     @Override
-    public BaseController start() {
+    public TextController start() {
         super.start();
 
         // Execute the 'uptime' command on the server every second and parse out the load average

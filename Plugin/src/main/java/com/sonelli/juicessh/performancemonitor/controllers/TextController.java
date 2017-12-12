@@ -9,7 +9,7 @@ import com.sonelli.juicessh.pluginlibrary.PluginClient;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class BaseController {
+public abstract class TextController {
 
     public static final int INTERVAL_SECONDS = 2;
 
@@ -21,26 +21,26 @@ public abstract class BaseController {
 
     private AtomicBoolean isRunning = new AtomicBoolean(false);
 
-    public BaseController(Context context) {
+    public TextController(Context context) {
         this.context = new WeakReference<>(context);
     }
 
-    public BaseController setSessionId(int sessionId){
+    public TextController setSessionId(int sessionId){
         this.sessionId = sessionId;
         return this;
     }
 
-    public BaseController setSessionKey(String sessionKey){
+    public TextController setSessionKey(String sessionKey){
         this.sessionKey = sessionKey;
         return this;
     }
 
-    public BaseController setPluginClient(PluginClient client){
+    public TextController setPluginClient(PluginClient client){
         this.client = client;
         return this;
     }
 
-    public BaseController setTextview(TextView textView){
+    public TextController setTextview(TextView textView){
         this.textView = textView;
         return this;
     }
@@ -75,7 +75,7 @@ public abstract class BaseController {
         return isRunning.get();
     }
 
-    public BaseController start() {
+    public TextController start() {
         isRunning.set(true);
         return this;
     }

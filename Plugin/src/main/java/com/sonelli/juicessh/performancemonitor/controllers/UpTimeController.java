@@ -9,16 +9,12 @@ import android.util.Log;
 import com.sonelli.juicessh.pluginlibrary.exceptions.ServiceNotConnectedException;
 import com.sonelli.juicessh.pluginlibrary.listeners.OnSessionExecuteListener;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Math.floor;
 
-
-public class UpTimeController extends BaseController {
+public class UpTimeController extends TextController {
 
 
     public static final String TAG = "UpTimeController";
@@ -26,7 +22,7 @@ public class UpTimeController extends BaseController {
     public UpTimeController(Context context) { super(context); }
 
     @Override
-    public BaseController start() {
+    public TextController start() {
         super.start();
 
         final Pattern uptimePattern = Pattern.compile("(^\\d*.\\d*)\\s*(\\d*.\\d*)");
@@ -95,7 +91,7 @@ public class UpTimeController extends BaseController {
         secs = secs % 60;
 
 
-        return String.format(Locale.US, "%dD %dH %dM %dS", days, hrs, mins, secs);
+        return String.format(Locale.US, "%dD %dH\n%dM %dS", days, hrs, mins, secs);
     }
 
 }

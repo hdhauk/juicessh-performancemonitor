@@ -20,14 +20,16 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.sonelli.juicessh.performancemonitor.R;
 import com.sonelli.juicessh.performancemonitor.adapters.ConnectionSpinnerAdapter;
-import com.sonelli.juicessh.performancemonitor.controllers.BaseController;
+import com.sonelli.juicessh.performancemonitor.controllers.TextController;
 import com.sonelli.juicessh.performancemonitor.controllers.CpuUsageController;
 import com.sonelli.juicessh.performancemonitor.controllers.DiskUsageController;
 import com.sonelli.juicessh.performancemonitor.controllers.FreeRamController;
 import com.sonelli.juicessh.performancemonitor.controllers.LoadAverageController;
 import com.sonelli.juicessh.performancemonitor.controllers.NetworkUsageController;
+import com.sonelli.juicessh.performancemonitor.controllers.PercentageController;
 import com.sonelli.juicessh.performancemonitor.controllers.UpTimeController;
 import com.sonelli.juicessh.performancemonitor.helpers.PreferenceHelper;
 import com.sonelli.juicessh.performancemonitor.loaders.ConnectionListLoader;
@@ -59,19 +61,19 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
     private ConnectionSpinnerAdapter spinnerAdapter;
 
     // Controllers
-    private BaseController loadAverageController;
-    private BaseController freeRamController;
-    private BaseController cpuUsageController;
-    private BaseController diskUsageController;
-    private BaseController networkUsageController;
-    private BaseController upTimeController;
+    private PercentageController cpuUsageController;
+    private PercentageController freeRamController;
+    private PercentageController diskUsageController;
+    private TextController loadAverageController;
+    private TextController networkUsageController;
+    private TextController upTimeController;
 
     // Text displays
+    private ArcProgress cpuUsageProgress;
+    private ArcProgress freeRamProgress;
+    private ArcProgress diskUsageProgress;
     private AutoResizeTextView loadAverageTextView;
-    private AutoResizeTextView freeRamTextView;
-    private AutoResizeTextView cpuUsageTextView;
     private AutoResizeTextView networkUsageTextView;
-    private AutoResizeTextView diskUsageTextView;
     private AutoResizeTextView upTimeTextView;
 
     // State
@@ -99,12 +101,12 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
         getSupportActionBar().setListNavigationCallbacks(spinnerAdapter, this);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        this.loadAverageTextView = (AutoResizeTextView) findViewById(R.id.load_average);
-        this.freeRamTextView = (AutoResizeTextView) findViewById(R.id.free_memory);
-        this.cpuUsageTextView = (AutoResizeTextView) findViewById(R.id.cpu_usage);
-        this.networkUsageTextView = (AutoResizeTextView) findViewById(R.id.network_usage);
-        this.diskUsageTextView = (AutoResizeTextView) findViewById(R.id.disk_usage);
-        this.upTimeTextView = (AutoResizeTextView) findViewById(R.id.uptime);
+        this.cpuUsageProgress       = (ArcProgress) findViewById(R.id.cpu_arc);
+        this.freeRamProgress        = (ArcProgress) findViewById(R.id.mem_arc);
+        this.diskUsageProgress      = (ArcProgress) findViewById(R.id.disk_arc);
+        this.loadAverageTextView    = (AutoResizeTextView) findViewById(R.id.load_average);
+        this.networkUsageTextView   = (AutoResizeTextView) findViewById(R.id.network_usage);
+        this.upTimeTextView         = (AutoResizeTextView) findViewById(R.id.uptime);
 
         this.connectButton = (Button) findViewById(R.id.connect_button);
         Drawable drawable = getDrawable(R.drawable.login);
@@ -288,21 +290,21 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
                 .setSessionId(sessionId)
                 .setSessionKey(sessionKey)
                 .setPluginClient(client)
-                .setTextview(freeRamTextView)
+                .setArcProgress(freeRamProgress)
                 .start();
 
-        this.cpuUsageController = new CpuUsageController(this)
+        this.cpuUsageController = (PercentageController) new CpuUsageController(this)
                 .setSessionId(sessionId)
                 .setSessionKey(sessionKey)
                 .setPluginClient(client)
-                .setTextview(cpuUsageTextView)
+                .setArcProgress(cpuUsageProgress)
                 .start();
 
         this.diskUsageController = new DiskUsageController(this)
                 .setSessionId(sessionId)
                 .setSessionKey(sessionKey)
                 .setPluginClient(client)
-                .setTextview(diskUsageTextView)
+                .setArcProgress(diskUsageProgress)
                 .start();
 
         this.networkUsageController = new NetworkUsageController(this)
@@ -358,11 +360,12 @@ public class MainActivity extends AppCompatActivity implements ActionBar.OnNavig
             networkUsageController.stop();
         }
 
+        freeRamProgress.setProgress(0);
+        cpuUsageProgress.setProgress(0);
+        diskUsageProgress.setProgress(0);
+
         loadAverageTextView.setText("-");
-        freeRamTextView.setText("-");
-        cpuUsageTextView.setText("-");
         networkUsageTextView.setText("-");
-        diskUsageTextView.setText("-");
         upTimeTextView.setText("-");
 
         disconnectButton.setVisibility(View.GONE);

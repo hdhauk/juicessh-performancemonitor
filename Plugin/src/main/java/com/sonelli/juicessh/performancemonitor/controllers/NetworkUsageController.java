@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NetworkUsageController extends BaseController {
+public class NetworkUsageController extends TextController {
 
     public static final String TAG = "NetworkUsageController";
     public NetworkUsageController(Context context) {
@@ -19,7 +19,7 @@ public class NetworkUsageController extends BaseController {
     }
 
     @Override
-    public BaseController start() {
+    public TextController start() {
         super.start();
 
         /*
@@ -38,9 +38,12 @@ public class NetworkUsageController extends BaseController {
         handler.post(new Runnable() {
             @Override
             public void run() {
-
                 try {
-                    getPluginClient().executeCommandOnSession(getSessionId(), getSessionKey(), "cat /proc/net/dev", new OnSessionExecuteListener() {
+                    getPluginClient().executeCommandOnSession(
+                            getSessionId(),
+                            getSessionKey(),
+                            "cat /proc/net/dev",
+                            new OnSessionExecuteListener() {
 
                         // Store the devices and the number of rx/tx bytes combined
                         HashMap<String, Long> devices = new HashMap<>();

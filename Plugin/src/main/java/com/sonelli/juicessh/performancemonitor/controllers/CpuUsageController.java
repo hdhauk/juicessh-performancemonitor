@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.sonelli.juicessh.performancemonitor.R;
 import com.sonelli.juicessh.pluginlibrary.PluginClient;
 import com.sonelli.juicessh.pluginlibrary.exceptions.ServiceNotConnectedException;
 import com.sonelli.juicessh.pluginlibrary.listeners.OnSessionExecuteListener;
@@ -13,7 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CpuUsageController extends BaseController {
+public class CpuUsageController extends PercentageController {
 
     public static final String TAG = "CpuUsageController";
 
@@ -21,8 +20,9 @@ public class CpuUsageController extends BaseController {
         super(context);
     }
 
+
     @Override
-    public BaseController start() {
+    public PercentageController start() {
         super.start();
 
         // USER    NICE    SYS   IDLE   IOWAIT  IRQ  SOFTIRQ  STEAL  GUEST
@@ -44,8 +44,8 @@ public class CpuUsageController extends BaseController {
                         @Override
                         public void onCompleted(int exitCode) {
                             switch(exitCode){
-                                case 127:
-                                    setText(getString(R.string.error));
+                                case COMMAND_NOT_FOUND:
+                                    setPercentage(0);
                                     Log.d(TAG, "Tried to run a command but the command was not found on the server");
                                     break;
                             }
@@ -88,7 +88,7 @@ public class CpuUsageController extends BaseController {
                                     long idleDelta = idle - previousIdle.get();
                                     long totalDelta = total - previousTotal.get();
                                     int free = (int)((idleDelta * 100.0) / totalDelta + 0.5);
-                                    setText((100 - free) + "%");
+                                    setPercentage(100-free);
                                 }
 
                                 previousIdle.set(idle);
@@ -109,7 +109,7 @@ public class CpuUsageController extends BaseController {
                 }
 
                 if(isRunning()){
-                    handler.postDelayed(this, INTERVAL_SECONDS * 1000L);
+                    handler.postDelayed(this, POLLING_INTERVAL * 1000L);
                 }
             }
         });
